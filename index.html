@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ArtSam ✦ Loyalty</title>
+  <meta name="description" content="Programa de lealtad ArtSam_01" />
+  <meta name="theme-color" content="#C9A8E0" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Klee+One:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --lavender: #C9A8E0;
+      --lavender-mid: #B68FD4;
+      --lavender-light: #E8D5F5;
+      --lavender-pale: #F5EEFF;
+      --pink: #F2A7C3;
+      --pink-light: #FFD6E7;
+      --mint: #A8DDD1;
+      --peach: #FFB99A;
+      --bg: #FDF6FF;
+      --card: #FFFFFF;
+      --text: #4A3560;
+      --muted: #9B85B5;
+      --border: #E8D5F5;
+      --stamp-empty: #F0E6FF;
+      --shadow: rgba(180,140,210,0.18);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; overflow-x:hidden; }
+
+    .deco { position:fixed; pointer-events:none; z-index:0; font-size:28px; opacity:0.10; animation:float 6s ease-in-out infinite; }
+    .deco-1{top:6%;left:5%;animation-delay:0s}
+    .deco-2{top:14%;right:7%;animation-delay:1s;font-size:22px}
+    .deco-3{top:52%;left:3%;animation-delay:2s;font-size:20px}
+    .deco-4{bottom:22%;right:5%;animation-delay:.5s}
+    .deco-5{bottom:9%;left:10%;animation-delay:1.5s;font-size:18px}
+    @keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-12px) rotate(5deg)}}
+    @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .screen{display:none;position:relative;z-index:1;min-height:100vh;padding:28px 20px 56px;max-width:420px;margin:0 auto}
+    .screen.active{display:flex;flex-direction:column}
+
+    /* LOADING */
+    #screen-loading{align-items:center;justify-content:center;gap:16px}
+    .loading-icon{font-size:52px;animation:bounce 1s ease-in-out infinite}
+    .loading-text{color:var(--muted);font-size:14px;font-weight:700}
+    .spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--lavender);border-radius:50%;animation:spin .8s linear infinite}
+
+    /* HEADER */
+    .app-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:26px}
+    .logo{font-family:'Klee One',cursive;font-weight:600;font-size:22px;color:var(--lavender-mid)}
+    .logo span{color:var(--pink)}
+    .back-btn{background:var(--card);border:2px solid var(--border);border-radius:50%;width:38px;height:38px;color:var(--muted);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px var(--shadow)}
+    .back-btn:hover{border-color:var(--lavender);color:var(--text)}
+
+    /* LOGIN */
+    #screen-login{justify-content:center}
+    .login-hero{text-align:center;margin-bottom:32px}
+    .login-hero .kawaii-icon{font-size:68px;display:block;margin-bottom:10px;animation:bounce 2.5s ease-in-out infinite}
+    .login-hero .brand{font-family:'Klee One',cursive;font-weight:600;font-size:40px;color:var(--text);line-height:1}
+    .login-hero .brand span{color:var(--lavender-mid)}
+    .login-hero .tagline{color:var(--muted);font-size:13px;margin-top:7px;font-weight:700;letter-spacing:.5px}
+    .stamp-preview{display:flex;justify-content:center;gap:6px;margin-top:18px}
+    .stamp-dot{width:14px;height:14px;border-radius:50%;background:var(--stamp-empty);border:2px solid var(--border)}
+    .stamp-dot.filled{background:var(--lavender);border-color:var(--lavender)}
+
+    .login-card{background:var(--card);border-radius:26px;padding:24px;box-shadow:0 8px 32px var(--shadow);border:2px solid var(--border)}
+    .login-card h3{font-size:16px;font-weight:900;margin-bottom:18px;color:var(--text);text-align:center}
+    .login-form{display:flex;flex-direction:column;gap:12px}
+
+    .input-group{display:flex;flex-direction:column;gap:5px}
+    .input-group label{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+    .input-group input{background:var(--lavender-pale);border:2px solid var(--border);border-radius:14px;padding:13px 16px;color:var(--text);font-size:15px;font-family:'Nunito',sans-serif;font-weight:600;outline:none;transition:all .2s}
+    .input-group input:focus{border-color:var(--lavender);background:white}
+    .input-group input::placeholder{color:var(--muted);font-weight:400}
+
+    .btn-primary{background:linear-gradient(135deg,var(--lavender),var(--lavender-mid));border:none;border-radius:16px;padding:15px;color:white;font-size:15px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:transform .15s,box-shadow .15s;box-shadow:0 4px 16px rgba(180,140,210,.4)}
+    .btn-primary:active{transform:scale(.97)}
+    .btn-primary:disabled{opacity:.6;cursor:not-allowed}
+    .btn-secondary{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:13px;color:var(--muted);font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s}
+    .btn-secondary:hover{border-color:var(--lavender);color:var(--text)}
+    .divider{text-align:center;color:var(--muted);font-size:12px;font-weight:700}
+
+    /* CLIENT */
+    .welcome-row{margin-bottom:18px}
+    .welcome-row h2{font-size:25px;font-weight:900}
+    .welcome-row p{color:var(--muted);font-size:13px;margin-top:3px;font-weight:700}
+
+    .stamp-card{background:var(--card);border-radius:24px;padding:22px;margin-bottom:14px;box-shadow:0 8px 32px var(--shadow);border:2px solid var(--border);position:relative;overflow:hidden}
+    .stamp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--lavender),var(--pink),var(--mint))}
+    .stamp-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;margin-top:4px}
+    .stamp-card-label{font-size:12px;font-weight:900;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+    .stamp-card-badge{background:var(--lavender-pale);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:11px;font-weight:800;color:var(--lavender-mid)}
+
+    .stamps-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+    .stamp{aspect-ratio:1;border-radius:50%;background:var(--stamp-empty);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .35s cubic-bezier(.34,1.56,.64,1)}
+    .stamp.filled{background:linear-gradient(135deg,var(--lavender),var(--lavender-mid));border-color:var(--lavender);box-shadow:0 3px 10px rgba(180,140,210,.4)}
+    .stamp.filled::after{content:'✦';font-size:12px;color:white}
+
+    .stamp-progress{display:flex;align-items:center;gap:10px}
+    .progress-bar-wrap{flex:1;height:6px;background:var(--stamp-empty);border-radius:3px;overflow:hidden}
+    .progress-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--lavender),var(--pink));transition:width .5s ease}
+    .progress-text{font-size:12px;color:var(--muted);font-weight:800;white-space:nowrap}
+
+    .prize-badge{background:linear-gradient(135deg,var(--pink-light),#FFF0F7);border:2px solid #FFD6E7;border-radius:20px;padding:16px;margin-bottom:14px;display:flex;align-items:center;gap:14px}
+    .prize-icon{font-size:36px;animation:bounce 2.5s ease-in-out infinite}
+    .prize-info h4{font-size:13px;font-weight:900;color:var(--text)}
+    .prize-info p{font-size:12px;color:var(--muted);margin-top:3px;font-weight:700}
+
+    .wallet-btn{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:14px 16px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text);font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;text-decoration:none;box-shadow:0 2px 8px var(--shadow)}
+    .wallet-btn:hover{border-color:var(--lavender)}
+
+    /* ADMIN */
+    .admin-badge{background:linear-gradient(135deg,var(--peach),#FFD6B0);border-radius:14px;padding:8px 16px;font-size:12px;font-weight:900;color:#7A4A20;display:inline-block;margin-bottom:18px}
+    .search-box{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:14px;box-shadow:0 2px 8px var(--shadow)}
+    .search-box input{background:none;border:none;outline:none;color:var(--text);font-size:15px;flex:1;font-family:'Nunito',sans-serif;font-weight:700}
+    .client-list{display:flex;flex-direction:column;gap:10px;flex:1}
+
+    .client-row{background:var(--card);border:2px solid var(--border);border-radius:18px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px var(--shadow)}
+    .client-row:hover{border-color:var(--lavender);transform:translateY(-1px)}
+    .client-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--lavender-light),var(--pink-light));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:var(--lavender-mid);flex-shrink:0}
+    .client-info{flex:1}
+    .client-info h4{font-size:15px;font-weight:900;color:var(--text)}
+    .client-info p{font-size:12px;color:var(--muted);margin-top:2px;font-weight:700}
+    .client-stamps-mini{display:flex;gap:3px}
+    .mini-stamp{width:9px;height:9px;border-radius:50%;background:var(--stamp-empty);border:1px solid var(--border)}
+    .mini-stamp.filled{background:var(--lavender);border-color:var(--lavender)}
+
+    .fab{position:fixed;bottom:28px;right:24px;width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,var(--lavender),var(--lavender-mid));border:none;color:white;font-size:30px;cursor:pointer;box-shadow:0 6px 20px rgba(180,140,210,.5);display:flex;align-items:center;justify-content:center;transition:transform .15s;z-index:10}
+    .fab:active{transform:scale(.92)}
+
+    /* DETAIL */
+    .detail-card{background:var(--card);border:2px solid var(--border);border-radius:24px;padding:24px;margin-bottom:12px;box-shadow:0 8px 32px var(--shadow)}
+    .detail-name{font-size:26px;font-weight:900;color:var(--text);margin-bottom:2px}
+    .detail-id{font-size:12px;color:var(--muted);margin-bottom:18px;font-weight:700}
+    .action-row{display:flex;gap:10px;margin-top:14px}
+    .btn-add{flex:1;background:linear-gradient(135deg,var(--lavender),var(--lavender-mid));border:none;border-radius:14px;padding:15px;color:white;font-size:15px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:transform .15s;box-shadow:0 4px 14px rgba(180,140,210,.4)}
+    .btn-add:active{transform:scale(.96)}
+    .btn-remove{background:var(--lavender-pale);border:2px solid var(--border);border-radius:14px;padding:14px 18px;color:var(--muted);font-size:20px;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .15s}
+    .btn-remove:hover{border-color:var(--pink);color:var(--pink)}
+    .btn-reset{width:100%;background:linear-gradient(135deg,var(--pink-light),#FFF0F7);border:2px solid #FFD6E7;border-radius:14px;padding:14px;color:#C06090;font-size:14px;font-weight:900;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;margin-top:10px}
+    .btn-reset:hover{background:var(--pink-light)}
+
+    /* MODALS */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(74,53,96,.3);backdrop-filter:blur(6px);z-index:100;align-items:flex-end;justify-content:center}
+    .modal-overlay.open{display:flex}
+    .modal{background:var(--card);border:2px solid var(--border);border-radius:28px 28px 0 0;padding:28px 24px 48px;width:100%;max-width:420px;animation:slide-up .3s cubic-bezier(.34,1.2,.64,1)}
+    @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+    .modal h3{font-size:20px;font-weight:900;color:var(--text);margin-bottom:6px}
+    .modal p{color:var(--muted);font-size:14px;margin-bottom:16px;font-weight:700}
+    .modal-actions{display:flex;gap:10px;margin-top:18px}
+    .modal-actions .btn-primary,.modal-actions .btn-secondary{flex:1}
+    .register-form{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+
+    .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);border-radius:16px;padding:12px 22px;font-size:14px;font-weight:800;color:white;opacity:0;transition:all .3s;z-index:200;white-space:nowrap;pointer-events:none;box-shadow:0 4px 20px rgba(74,53,96,.3)}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    .empty-state{text-align:center;padding:40px 20px;color:var(--muted)}
+    .empty-state .icon{font-size:52px;margin-bottom:12px}
+    .empty-state p{font-size:14px;font-weight:700;line-height:1.6}
+
+    .sync-indicator{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:12px}
+    .sync-dot{width:7px;height:7px;border-radius:50%;background:#86efac}
+    .sync-dot.syncing{background:var(--peach);animation:pulse .8s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  </style>
+</head>
+<body>
+
+<div class="deco deco-1">🌸</div>
+<div class="deco deco-2">⭐</div>
+<div class="deco deco-3">🎀</div>
+<div class="deco deco-4">✨</div>
+<div class="deco deco-5">🌷</div>
+
+<!-- LOADING -->
+<div id="screen-loading" class="screen active">
+  <div class="loading-icon">🧶</div>
+  <div class="spinner"></div>
+  <div class="loading-text">Cargando ArtSam...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="screen-login" class="screen">
+  <div class="login-hero">
+    <span class="kawaii-icon">🧶</span>
+    <div class="brand">Art<span>Sam</span> ✦</div>
+    <div class="tagline">✨ Programa de Lealtad ✨</div>
+    <div class="stamp-preview">
+      <div class="stamp-dot filled"></div>
+      <div class="stamp-dot filled"></div>
+      <div class="stamp-dot filled"></div>
+      <div class="stamp-dot"></div>
+      <div class="stamp-dot"></div>
+    </div>
+  </div>
+  <div class="login-card">
+    <h3>🌸 ¡Ingresa para ver tus sellos!</h3>
+    <div class="login-form">
+      <div class="input-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="login-email" placeholder="tu@email.com" />
+      </div>
+      <div class="input-group">
+        <label>Tu nombre</label>
+        <input type="text" id="login-name" placeholder="¿Cómo te llamas?" />
+      </div>
+      <button class="btn-primary" id="btn-login" onclick="loginCliente()">Ver mis sellos ✦</button>
+      <div class="divider">— o —</div>
+      <button class="btn-secondary" onclick="loginAdmin()">⚙ Acceso administrador</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLIENTE -->
+<div id="screen-cliente" class="screen">
+  <div class="app-header">
+    <div class="logo">Art<span>Sam</span> ✦</div>
+    <button class="back-btn" onclick="goTo('login')">✕</button>
+  </div>
+  <div class="welcome-row">
+    <h2 id="client-greeting">¡Hola! 🌸</h2>
+    <p>Colecciona sellos y gana tu premio 🎁</p>
+  </div>
+  <div class="sync-indicator">
+    <div class="sync-dot" id="sync-dot"></div>
+    <span id="sync-text">Sincronizado con la nube ☁️</span>
+  </div>
+  <div class="stamp-card">
+    <div class="stamp-card-top">
+      <div class="stamp-card-label">Tu tarjeta</div>
+      <div class="stamp-card-badge">10 sellos = premio 🎀</div>
+    </div>
+    <div class="stamps-grid" id="stamps-grid"></div>
+    <div class="stamp-progress">
+      <span class="progress-text" id="progress-left"></span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar"></div>
+      </div>
+      <span class="progress-text" id="progress-count"></span>
+    </div>
+  </div>
+  <div class="prize-badge">
+    <div class="prize-icon">🎁</div>
+    <div class="prize-info">
+      <h4>Premio al completar los 10 sellos</h4>
+      <p>Sticker, Poster o Llavero a elección 🌸</p>
+    </div>
+  </div>
+  <a id="wallet-link" href="#" class="wallet-btn" target="_blank">
+    💳 Agregar a Google Wallet
+  </a>
+</div>
+
+<!-- ADMIN -->
+<div id="screen-admin" class="screen">
+  <div class="app-header">
+    <div class="logo">Art<span>Sam</span> ✦</div>
+    <button class="back-btn" onclick="goTo('login')">✕</button>
+  </div>
+  <div class="admin-badge">⚙ Panel Administrador</div>
+  <div class="search-box">
+    <span>🔍</span>
+    <input type="text" id="search-input" placeholder="Buscar cliente..." oninput="filtrarClientes()" />
+  </div>
+  <div class="client-list" id="client-list"></div>
+  <button class="fab" onclick="openNewClientModal()">+</button>
+</div>
+
+<!-- DETALLE -->
+<div id="screen-detalle" class="screen">
+  <div class="app-header">
+    <button class="back-btn" onclick="goTo('admin')">←</button>
+    <div class="logo">Art<span>Sam</span> ✦</div>
+  </div>
+  <div class="detail-card">
+    <div class="detail-name" id="detail-name"></div>
+    <div class="detail-id" id="detail-email"></div>
+    <div class="stamps-grid" id="detail-stamps-grid"></div>
+    <div class="action-row">
+      <button class="btn-add" onclick="agregarSello()">✦ Agregar sello</button>
+      <button class="btn-remove" onclick="quitarSello()">－</button>
+    </div>
+    <button class="btn-reset" onclick="openResetModal()">🎁 Canjear premio (resetear sellos)</button>
+  </div>
+</div>
+
+<!-- MODAL ADMIN LOGIN -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>🔐 Administrador</h3>
+    <p>Ingresa la contraseña para acceder al panel</p>
+    <div class="input-group">
+      <label>Contraseña</label>
+      <input type="password" id="admin-pass-input" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') checkAdminPass()" />
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-admin-login')">Cancelar</button>
+      <button class="btn-primary" onclick="checkAdminPass()">Entrar ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO CLIENTE -->
+<div class="modal-overlay" id="modal-nuevo">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>🌸 Nuevo cliente</h3>
+    <p>Registra un cliente para comenzar a darle sellos</p>
+    <div class="register-form">
+      <div class="input-group">
+        <label>Nombre completo</label>
+        <input type="text" id="new-name" placeholder="María González" />
+      </div>
+      <div class="input-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="new-email" placeholder="maria@email.com" />
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-nuevo')">Cancelar</button>
+      <button class="btn-primary" id="btn-crear" onclick="crearCliente()">Registrar ✦</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RESET -->
+<div class="modal-overlay" id="modal-reset">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h3>🎁 Canjear premio</h3>
+    <p id="reset-msg">¿Confirmas que el cliente recibió su premio?</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('modal-reset')">Cancelar</button>
+      <button class="btn-primary" onclick="resetearSellos()">Confirmar 🎀</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, setDoc, updateDoc,
+    collection, getDocs, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── CONFIG ────────────────────────────────────────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyAs-214ytdcwajTOvnjniiFk7IrOk7vx0s",
+    authDomain: "artsam-loyalty.firebaseapp.com",
+    databaseURL: "https://artsam-loyalty-default-rtdb.firebaseio.com",
+    projectId: "artsam-loyalty",
+    storageBucket: "artsam-loyalty.firebasestorage.app",
+    messagingSenderId: "199496773793",
+    appId: "1:199496773793:web:deb5ffcd37c2910df280e0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  // ── CONSTANTS ─────────────────────────────────────────
+  const TOTAL_SELLOS = 10;
+  const ADMIN_PASS   = "artsam2024";
+
+  let todosClientes  = {};
+  let currentKey     = null;
+  let unsubscribe    = null;
+
+  // ── NAVIGATION ────────────────────────────────────────
+  window.goTo = (screen) => {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + screen).classList.add('active');
+    window.scrollTo(0, 0);
+  };
+
+  // ── INIT ──────────────────────────────────────────────
+  async function init() {
+    goTo('loading');
+    try {
+      const snap = await getDocs(collection(db, 'clientes'));
+      snap.forEach(d => { todosClientes[d.id] = d.data(); });
+    } catch(e) { console.warn('Firebase init:', e); }
+    goTo('login');
+  }
+  init();
+
+  // ── SYNC INDICATOR ────────────────────────────────────
+  function setSyncing(on) {
+    const dot  = document.getElementById('sync-dot');
+    const text = document.getElementById('sync-text');
+    if (!dot) return;
+    if (on) {
+      dot.classList.add('syncing');
+      text.textContent = 'Guardando... ☁️';
+    } else {
+      dot.classList.remove('syncing');
+      text.textContent = 'Sincronizado con la nube ☁️';
+    }
+  }
+
+  // ── LOGIN CLIENTE ─────────────────────────────────────
+  window.loginCliente = async () => {
+    const email = document.getElementById('login-email').value.trim().toLowerCase();
+    const name  = document.getElementById('login-name').value.trim();
+    if (!email || !name) { showToast('🌸 Completa todos los campos'); return; }
+
+    const btn = document.getElementById('btn-login');
+    btn.disabled = true; btn.textContent = 'Cargando...';
+
+    try {
+      const ref  = doc(db, 'clientes', email);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, { name, email, sellos: 0, wallet: '' });
+        todosClientes[email] = { name, email, sellos: 0, wallet: '' };
+      } else {
+        todosClientes[email] = snap.data();
+      }
+      currentKey = email;
+
+      // Escucha en tiempo real
+      if (unsubscribe) unsubscribe();
+      unsubscribe = onSnapshot(ref, (d) => {
+        if (d.exists()) {
+          todosClientes[email] = d.data();
+          renderClienteView(email);
+        }
+      });
+
+      renderClienteView(email);
+      goTo('cliente');
+    } catch(e) {
+      showToast('❌ Error al conectar. Revisa tu internet.');
+      console.error(e);
+    }
+    btn.disabled = false; btn.textContent = 'Ver mis sellos ✦';
+  };
+
+  // ── LOGIN ADMIN ───────────────────────────────────────
+  window.loginAdmin = () => {
+    document.getElementById("admin-pass-input").value = "";
+    document.getElementById("modal-admin-login").classList.add("open");
+    setTimeout(() => document.getElementById("admin-pass-input").focus(), 350);
+  };
+
+  window.checkAdminPass = async () => {
+    const pass = document.getElementById("admin-pass-input").value;
+    if (pass === ADMIN_PASS) {
+      closeModal("modal-admin-login");
+      await recargarClientes();
+      renderClientes();
+      goTo("admin");
+    } else {
+      showToast("❌ Contraseña incorrecta");
+      document.getElementById("admin-pass-input").value = "";
+    }
+  };
+
+  async function recargarClientes() {
+    try {
+      const snap = await getDocs(collection(db, 'clientes'));
+      todosClientes = {};
+      snap.forEach(d => { todosClientes[d.id] = d.data(); });
+    } catch(e) { console.warn(e); }
+  }
+
+  // ── CLIENT VIEW ───────────────────────────────────────
+  function renderClienteView(key) {
+    const c = todosClientes[key];
+    if (!c) return;
+    document.getElementById('client-greeting').textContent = `¡Hola, ${c.name.split(' ')[0]}! 🌸`;
+    renderStampsGrid('stamps-grid', c.sellos);
+    const pct = (c.sellos / TOTAL_SELLOS) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-count').textContent = `${c.sellos}/${TOTAL_SELLOS}`;
+    document.getElementById('progress-left').textContent =
+      c.sellos < TOTAL_SELLOS ? `Faltan ${TOTAL_SELLOS - c.sellos}` : '¡Premio listo! 🎉';
+    const wl = document.getElementById('wallet-link');
+    if (c.wallet) { wl.href = c.wallet; wl.style.display = ''; }
+    else { wl.style.display = 'none'; }
+  }
+
+  function renderStampsGrid(gridId, sellos) {
+    const grid = document.getElementById(gridId);
+    grid.innerHTML = '';
+    for (let i = 0; i < TOTAL_SELLOS; i++) {
+      const s = document.createElement('div');
+      s.className = 'stamp ' + (i < sellos ? 'filled' : 'empty');
+      grid.appendChild(s);
+    }
+  }
+
+  // ── ADMIN CLIENTES ────────────────────────────────────
+  function renderClientes(q = '') {
+    const list = document.getElementById('client-list');
+    list.innerHTML = '';
+    const keys = Object.keys(todosClientes).filter(k =>
+      todosClientes[k].name.toLowerCase().includes(q.toLowerCase()) ||
+      todosClientes[k].email.toLowerCase().includes(q.toLowerCase())
+    );
+    if (!keys.length) {
+      list.innerHTML = `<div class="empty-state"><div class="icon">🌸</div><p>No hay clientes aún.<br>Toca + para agregar uno.</p></div>`;
+      return;
+    }
+    keys.forEach(key => {
+      const c = todosClientes[key];
+      const row = document.createElement('div');
+      row.className = 'client-row';
+      row.onclick = () => openDetalle(key);
+      const mini = Array.from({length: TOTAL_SELLOS}, (_,i) =>
+        `<div class="mini-stamp ${i < c.sellos ? 'filled' : ''}"></div>`).join('');
+      row.innerHTML = `
+        <div class="client-avatar">${c.name[0].toUpperCase()}</div>
+        <div class="client-info"><h4>${c.name}</h4><p>${c.sellos}/${TOTAL_SELLOS} sellos</p></div>
+        <div class="client-stamps-mini">${mini}</div>`;
+      list.appendChild(row);
+    });
+  }
+
+  window.filtrarClientes = () => {
+    renderClientes(document.getElementById('search-input').value);
+  };
+
+  // ── NUEVO CLIENTE ─────────────────────────────────────
+  window.openNewClientModal = () => {
+    document.getElementById('new-name').value = '';
+    document.getElementById('new-email').value = '';
+    document.getElementById('modal-nuevo').classList.add('open');
+  };
+
+  window.crearCliente = async () => {
+    const name  = document.getElementById('new-name').value.trim();
+    const email = document.getElementById('new-email').value.trim().toLowerCase();
+    if (!name || !email) { showToast('🌸 Completa todos los campos'); return; }
+    if (todosClientes[email]) { showToast('Este cliente ya existe'); return; }
+
+    const btn = document.getElementById('btn-crear');
+    btn.disabled = true; btn.textContent = 'Guardando...';
+
+    try {
+      await setDoc(doc(db, 'clientes', email), { name, email, sellos: 0, wallet: '' });
+      todosClientes[email] = { name, email, sellos: 0, wallet: '' };
+      closeModal('modal-nuevo');
+      renderClientes();
+      showToast(`✦ ${name} registrada/o!`);
+    } catch(e) {
+      showToast('❌ Error al guardar'); console.error(e);
+    }
+    btn.disabled = false; btn.textContent = 'Registrar ✦';
+  };
+
+  // ── DETALLE ───────────────────────────────────────────
+  window.openDetalle = (key) => {
+    currentKey = key;
+    const c = todosClientes[key];
+    document.getElementById('detail-name').textContent = c.name;
+    document.getElementById('detail-email').textContent = c.email;
+    renderStampsGrid('detail-stamps-grid', c.sellos);
+    goTo('detalle');
+  };
+
+  window.agregarSello = async () => {
+    const c = todosClientes[currentKey];
+    if (c.sellos >= TOTAL_SELLOS) { showToast('¡Ya tiene todos los sellos! Canjea primero 🎁'); return; }
+    const nuevos = c.sellos + 1;
+    setSyncing(true);
+    try {
+      await updateDoc(doc(db, 'clientes', currentKey), { sellos: nuevos });
+      todosClientes[currentKey].sellos = nuevos;
+      renderStampsGrid('detail-stamps-grid', nuevos);
+      renderClientes(document.getElementById('search-input')?.value || '');
+      showToast(`✦ Sello agregado — ${nuevos}/${TOTAL_SELLOS}`);
+      if (nuevos === TOTAL_SELLOS) setTimeout(() => showToast('🎉 ¡Premio completado!'), 1500);
+    } catch(e) { showToast('❌ Error al guardar'); }
+    setSyncing(false);
+  };
+
+  window.quitarSello = async () => {
+    const c = todosClientes[currentKey];
+    if (c.sellos <= 0) { showToast('Ya tiene 0 sellos 🌸'); return; }
+    const nuevos = c.sellos - 1;
+    setSyncing(true);
+    try {
+      await updateDoc(doc(db, 'clientes', currentKey), { sellos: nuevos });
+      todosClientes[currentKey].sellos = nuevos;
+      renderStampsGrid('detail-stamps-grid', nuevos);
+      showToast(`Sello quitado — ${nuevos}/${TOTAL_SELLOS}`);
+    } catch(e) { showToast('❌ Error al guardar'); }
+    setSyncing(false);
+  };
+
+  window.openResetModal = () => {
+    const c = todosClientes[currentKey];
+    document.getElementById('reset-msg').textContent =
+      `¿${c.name} recibió su premio? Los sellos se resetearán a 0. 🎀`;
+    document.getElementById('modal-reset').classList.add('open');
+  };
+
+  window.resetearSellos = async () => {
+    setSyncing(true);
+    try {
+      await updateDoc(doc(db, 'clientes', currentKey), { sellos: 0 });
+      todosClientes[currentKey].sellos = 0;
+      renderStampsGrid('detail-stamps-grid', 0);
+      closeModal('modal-reset');
+      showToast('🎁 Premio canjeado — ¡a seguir coleccionando!');
+    } catch(e) { showToast('❌ Error al guardar'); }
+    setSyncing(false);
+  };
+
+  // ── MODALS ────────────────────────────────────────────
+  window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+  document.querySelectorAll('.modal-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+  });
+
+  // ── TOAST ─────────────────────────────────────────────
+  window.showToast = (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  };
+
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
