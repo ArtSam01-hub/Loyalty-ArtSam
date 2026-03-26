@@ -84,6 +84,14 @@
     .btn-secondary:hover{border-color:var(--lavender);color:var(--text)}
     .divider{text-align:center;color:var(--muted);font-size:12px;font-weight:700}
 
+    /* TABS CLIENTE */
+    .cliente-tabs{display:flex;gap:10px;margin-bottom:20px;border-bottom:2px solid var(--border);overflow-x:auto;padding-bottom:0}
+    .tab-btn{flex:1;padding:12px 0;border:none;background:none;color:var(--muted);font-weight:700;font-size:14px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap}
+    .tab-btn.active{color:var(--lavender-mid);border-bottom-color:var(--lavender-mid)}
+
+    .tab-content{display:none;flex:1;overflow-y:auto;padding-bottom:20px}
+    .tab-content.active{display:flex;flex-direction:column}
+
     /* CLIENT */
     .welcome-row{margin-bottom:18px}
     .welcome-row h2{font-size:25px;font-weight:900}
@@ -112,6 +120,29 @@
 
     .wallet-btn{background:var(--card);border:2px solid var(--border);border-radius:16px;padding:14px 16px;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;color:var(--text);font-size:14px;font-weight:800;font-family:'Nunito',sans-serif;cursor:pointer;transition:all .2s;text-decoration:none;box-shadow:0 2px 8px var(--shadow)}
     .wallet-btn:hover{border-color:var(--lavender)}
+
+    /* NOTIFICACIONES FORM */
+    .notif-form-group{margin-bottom:20px}
+    .notif-form-group label{display:block;margin-bottom:8px;color:var(--text);font-weight:600;font-size:14px}
+    .notif-form-group input[type="email"],
+    .notif-form-group textarea{width:100%;padding:12px;border:2px solid var(--border);border-radius:12px;font-size:14px;font-family:inherit;transition:border-color .2s;outline:none}
+    .notif-form-group input[type="email"]:focus,
+    .notif-form-group textarea:focus{border-color:var(--lavender)}
+    .notif-form-group textarea{resize:vertical;min-height:80px;font-weight:600}
+
+    .notif-checkbox-group{display:flex;align-items:center;gap:10px;margin-top:8px}
+    .notif-checkbox-group input[type="checkbox"]{width:18px;height:18px;cursor:pointer;accent-color:var(--lavender)}
+    .notif-checkbox-group label{margin:0;cursor:pointer;font-size:13px}
+
+    .notif-alert{padding:12px;border-radius:10px;margin-bottom:16px;display:none;font-size:13px;font-weight:700;animation:slideIn .3s ease-out}
+    .notif-alert.show{display:block}
+    .notif-alert-success{background-color:#d4edda;color:#155724;border:1px solid #c3e6cb}
+    .notif-alert-error{background-color:#f8d7da;color:#721c24;border:1px solid #f5c6cb}
+    .notif-alert-info{background-color:#d1ecf1;color:#0c5460;border:1px solid #bee5eb}
+
+    @keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+    .notif-instruction{background:var(--lavender-pale);padding:12px;border-left:4px solid var(--lavender);margin-bottom:16px;font-size:12px;color:var(--text);line-height:1.5}
 
     /* ADMIN */
     .admin-badge{background:linear-gradient(135deg,var(--peach),#FFD6B0);border-radius:14px;padding:8px 16px;font-size:12px;font-weight:900;color:#7A4A20;display:inline-block;margin-bottom:18px}
@@ -222,38 +253,116 @@
     <div class="logo">Art<span>Sam</span> ✦</div>
     <button class="back-btn" onclick="goTo('login')">✕</button>
   </div>
-  <div class="welcome-row">
-    <h2 id="client-greeting">¡Hola! 🌸</h2>
-    <p>Colecciona sellos y gana tu premio 🎁</p>
+
+  <!-- TABS CLIENTE -->
+  <div class="cliente-tabs">
+    <button class="tab-btn active" onclick="switchClientTab('sellos')" id="tab-btn-sellos">
+      ✦ Mis sellos
+    </button>
+    <button class="tab-btn" onclick="switchClientTab('notificaciones')" id="tab-btn-notificaciones">
+      📧 Notificaciones
+    </button>
   </div>
-  <div class="sync-indicator">
-    <div class="sync-dot" id="sync-dot"></div>
-    <span id="sync-text">Sincronizado con la nube ☁️</span>
-  </div>
-  <div class="stamp-card">
-    <div class="stamp-card-top">
-      <div class="stamp-card-label">Tu tarjeta</div>
-      <div class="stamp-card-badge">10 sellos = premio 🎀</div>
+
+  <!-- TAB: SELLOS -->
+  <div id="tab-content-sellos" class="tab-content active">
+    <div class="welcome-row">
+      <h2 id="client-greeting">¡Hola! 🌸</h2>
+      <p>Colecciona sellos y gana tu premio 🎁</p>
     </div>
-    <div class="stamps-grid" id="stamps-grid"></div>
-    <div class="stamp-progress">
-      <span class="progress-text" id="progress-left"></span>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progress-bar"></div>
+    <div class="sync-indicator">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span id="sync-text">Sincronizado con la nube ☁️</span>
+    </div>
+    <div class="stamp-card">
+      <div class="stamp-card-top">
+        <div class="stamp-card-label">Tu tarjeta</div>
+        <div class="stamp-card-badge">10 sellos = premio 🎀</div>
       </div>
-      <span class="progress-text" id="progress-count"></span>
+      <div class="stamps-grid" id="stamps-grid"></div>
+      <div class="stamp-progress">
+        <span class="progress-text" id="progress-left"></span>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+        <span class="progress-text" id="progress-count"></span>
+      </div>
     </div>
-  </div>
-  <div class="prize-badge">
-    <div class="prize-icon">🎁</div>
-    <div class="prize-info">
-      <h4>Premio al completar los 10 sellos</h4>
-      <p>Sticker, Poster o Llavero a elección 🌸</p>
+    <div class="prize-badge">
+      <div class="prize-icon">🎁</div>
+      <div class="prize-info">
+        <h4>Premio al completar los 10 sellos</h4>
+        <p>Sticker, Poster o Llavero a elección 🌸</p>
+      </div>
     </div>
+    <a id="wallet-link" href="#" class="wallet-btn" target="_blank">
+      💳 Agregar a Google Wallet
+    </a>
   </div>
-  <a id="wallet-link" href="#" class="wallet-btn" target="_blank">
-    💳 Agregar a Google Wallet
-  </a>
+
+  <!-- TAB: NOTIFICACIONES -->
+  <div id="tab-content-notificaciones" class="tab-content">
+    <div class="welcome-row">
+      <h2>📧 Mantente informada</h2>
+      <p>Recibe nuestras ofertas y actualizaciones</p>
+    </div>
+
+    <div class="notif-instruction">
+      <strong>✨ Tip:</strong> Suscríbete para recibir notificaciones sobre nuevas ofertas, actualizaciones y sorteos especiales en ArtSam.
+    </div>
+
+    <div id="notif-alert"></div>
+
+    <form id="form-notificaciones" onsubmit="submitNotificacionesForm(event)">
+      <div class="notif-form-group">
+        <label for="notif-email">Email *</label>
+        <input 
+          type="email" 
+          id="notif-email"
+          name="email"
+          placeholder="tu@email.com"
+          required
+        />
+      </div>
+
+      <div class="notif-form-group">
+        <label for="notif-nombre">Nombre (opcional)</label>
+        <input 
+          type="text" 
+          id="notif-nombre"
+          name="nombre"
+          placeholder="Tu nombre"
+        />
+      </div>
+
+      <div class="notif-form-group">
+        <label>¿Qué te interesa?</label>
+        <div class="notif-checkbox-group">
+          <input type="checkbox" id="notif-ofertas" name="ofertas" value="on" checked />
+          <label for="notif-ofertas">Ofertas y promociones</label>
+        </div>
+        <div class="notif-checkbox-group">
+          <input type="checkbox" id="notif-noticias" name="noticias" value="on" checked />
+          <label for="notif-noticias">Noticias y actualizaciones</label>
+        </div>
+        <div class="notif-checkbox-group">
+          <input type="checkbox" id="notif-eventos" name="eventos" value="on" />
+          <label for="notif-eventos">Eventos y sorteos</label>
+        </div>
+      </div>
+
+      <div class="notif-checkbox-group">
+        <input type="checkbox" id="notif-terminos" name="terminos" required />
+        <label for="notif-terminos" style="font-size:12px;">
+          Acepto recibir notificaciones por email
+        </label>
+      </div>
+
+      <button type="submit" class="btn-primary" style="width: 100%; margin-top: 16px;">
+        ✓ Suscribirme
+      </button>
+    </form>
+  </div>
 </div>
 
 <!-- ADMIN -->
@@ -345,6 +454,7 @@
 
 <div class="toast" id="toast"></div>
 
+
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -381,6 +491,73 @@
     document.getElementById('screen-' + screen).classList.add('active');
     window.scrollTo(0, 0);
   };
+
+  // ── TABS CLIENTE ───────────────────────────────────────
+  window.switchClientTab = (tabName) => {
+    // Ocultar todos los tabs
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    // Mostrar el tab seleccionado
+    document.getElementById('tab-content-' + tabName).classList.add('active');
+    document.getElementById('tab-btn-' + tabName).classList.add('active');
+  };
+
+  // ── NOTIFICACIONES FORM ────────────────────────────────
+  window.submitNotificacionesForm = async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('notif-email').value.trim().toLowerCase();
+    const nombre = document.getElementById('notif-nombre').value.trim();
+    const terminos = document.getElementById('notif-terminos').checked;
+    const alertDiv = document.getElementById('notif-alert');
+
+    if (!email) {
+      mostrarAlertaNotif(alertDiv, 'Por favor ingresa tu email', 'error');
+      return;
+    }
+
+    if (!terminos) {
+      mostrarAlertaNotif(alertDiv, 'Debes aceptar recibir notificaciones', 'error');
+      return;
+    }
+
+    // Obtener valores de checkboxes
+    const ofertas = document.getElementById('notif-ofertas').checked ? 'sí' : 'no';
+    const noticias = document.getElementById('notif-noticias').checked ? 'sí' : 'no';
+    const eventos = document.getElementById('notif-eventos').checked ? 'sí' : 'no';
+
+    mostrarAlertaNotif(alertDiv, 'Enviando...', 'info');
+
+    try {
+      // Aquí es donde conectarías con Formspree
+      // Comentado por ahora - necesita tu ID de Formspree
+      
+      // await fetch('https://formspree.io/f/TU_ID', {
+      //   method: 'POST',
+      //   body: new FormData(document.getElementById('form-notificaciones')),
+      //   headers: { 'Accept': 'application/json' }
+      // });
+
+      // Simulamos el envío exitoso
+      setTimeout(() => {
+        mostrarAlertaNotif(alertDiv, '✓ ¡Suscripción exitosa! Revisa tu email para confirmar.', 'success');
+        document.getElementById('form-notificaciones').reset();
+      }, 800);
+
+      showToast('📧 ¡Suscripción completada!');
+    } catch (error) {
+      mostrarAlertaNotif(alertDiv, '❌ Error al suscribirse. Intenta de nuevo.', 'error');
+    }
+  };
+
+  function mostrarAlertaNotif(element, mensaje, tipo) {
+    element.className = `notif-alert notif-alert-${tipo} show`;
+    element.textContent = mensaje;
+    setTimeout(() => {
+      element.classList.remove('show');
+    }, 4000);
+  }
 
   // ── INIT ──────────────────────────────────────────────
   async function init() {
