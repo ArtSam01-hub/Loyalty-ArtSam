@@ -530,14 +530,11 @@
     mostrarAlertaNotif(alertDiv, 'Enviando...', 'info');
 
     try {
-      // Aquí es donde conectarías con Formspree
-      // Comentado por ahora - necesita tu ID de Formspree
-      
-      // await fetch('https://formspree.io/f/TU_ID', {
-      //   method: 'POST',
-      //   body: new FormData(document.getElementById('form-notificaciones')),
-      //   headers: { 'Accept': 'application/json' }
-      // });
+      await fetch('https://formspree.io/f/TU_ID', {
+      method: 'POST',
+       body: new FormData(document.getElementById('form-notificaciones')),
+      headers: { 'Accept': 'application/json' }
+      });
 
       // Simulamos el envío exitoso
       setTimeout(() => {
